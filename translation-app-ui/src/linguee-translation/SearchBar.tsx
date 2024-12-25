@@ -1,6 +1,11 @@
 import React, { useState } from 'react';
-import {getWordTranslationInfo} from '../api/linguee-api'
-const SearchBar: React.FC = () => {
+import {getWordTranslationInfo} from './api/linguee-api'
+import { TranslationResult } from './api/linguee.translation.interface';
+interface LingueeTranslationProps {
+  onTranslationResult: (lingueeResult: TranslationResult) => void;
+}
+
+const SearchBar: React.FC<LingueeTranslationProps> = ({onTranslationResult}) => {
   const [searchQuery, setSearchQuery] = useState<string>('');
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -9,10 +14,8 @@ const SearchBar: React.FC = () => {
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
-    // Add your search functionality here
-    console.log('Searching for:', searchQuery);
-    const data = await getWordTranslationInfo(searchQuery);
-    console.log(data[0].translations)
+    const data:TranslationResult = await getWordTranslationInfo(searchQuery);
+    onTranslationResult(data)
   };
 
   return (

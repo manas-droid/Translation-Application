@@ -1,14 +1,18 @@
 import React from 'react';
-import SearchBar from './SearchBar';
+import Sidebar from './Sidebar';
+import Home from './Home';
+import {Routes, Route } from 'react-router-dom';
+import SavedWords from './user-saved-words/saved.words.component';
 
 const App: React.FC = () => {
   return (
-    <div className="App">
-      <header className="App-header">
-        <h1 className="text-3xl font-bold text-center mt-5">Search Bar Example</h1>
-        <SearchBar />
-      </header>
-    </div>
+    <>
+      <Sidebar/>
+      <Routes>
+        <Route path='/' element = {<Home/>}/>
+        <Route path='/saved-words' element={<SavedWords/>}/>
+      </Routes>
+    </>
   );
 }
 
