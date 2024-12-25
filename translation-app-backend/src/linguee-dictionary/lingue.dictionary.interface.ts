@@ -1,4 +1,5 @@
 
+import { Example } from "../utils/translation.response.js"
 
 export interface LingueeResponse{
     featured? : boolean,
@@ -12,34 +13,6 @@ export interface LingueeResponse{
     }[]
     audio_links?: Audio[]
 }
-
-
-
-export interface TranslationResult{
-    text?:string,
-    src_audio_link?:string,
-    translation: Translation
-}
-
-
-export interface ErrorResponse{
-    message:string,
-    statusCode: number
-}
-
-
-export interface Translation{
-    text?:string,
-    pos?:string,
-    examples?: Example[],
-    audio_link?:string
-}
-
-interface Example{
-    src?:string,
-    dst?:string
-}
-
 
 
 interface Audio{

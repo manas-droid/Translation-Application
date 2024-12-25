@@ -1,4 +1,5 @@
-import { LingueeResponse, TranslationResult} from "./lingue.dictionary.interface.js";
+import { TranslationResult } from "../utils/translation.response.js";
+import { LingueeResponse} from "./lingue.dictionary.interface.js";
 
 
 

@@ -1,6 +1,8 @@
 import {Request, Response} from 'express'
-import { ErrorResponse, LingueeResponse, TranslationResult } from './lingue.dictionary.interface.js';
+import {LingueeResponse } from './lingue.dictionary.interface.js';
 import { mapToLingueeResponse } from './linguee.dictionary.mapper.js';
+import { TranslationResult  } from '../utils/translation.response.js';
+import { ErrorResponse } from '../utils/error.response.js';
 
 export async function getLingueeTranslation(req:Request, res:Response<(TranslationResult|ErrorResponse)>){
   const { word } = req.query;
