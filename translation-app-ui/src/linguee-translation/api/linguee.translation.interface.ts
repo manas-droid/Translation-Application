@@ -12,7 +12,7 @@ export interface Translation{
   audio_link?:string
 }
 
-interface Example{
+export interface Example{
   src?:string,
   dst?:string
 }

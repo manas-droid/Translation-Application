@@ -3,13 +3,9 @@ import { UserWordsCollection } from "./user.words.model.js";
 import { ErrorResponse } from "../utils/error.response.js";
 import { SuccessResponse } from "../utils/success.response.js";
 
-export async function saveTranslation(translationRes: TranslationResult, userId:string = "tempId"): Promise<SuccessResponse|ErrorResponse>{
-
+export async function saveTranslation(translationRes: TranslationResult, userId:string): Promise<SuccessResponse|ErrorResponse>{
     try {
-        console.log(translationRes)
         const response = await UserWordsCollection.updateOne({userId}, { $set : {userId} , $push : {savedWords : translationRes}}, {upsert:true});
-        console.log("Upset Command Successful!" , response);
-
         return {
             message: "Successfully added word to your dictionary",
             statusCode:200
@@ -27,7 +23,13 @@ export async function saveTranslation(translationRes: TranslationResult, userId:
 
 }
 
-function getAllTranslations(userId:string = "tempId"):TranslationResult[]{
-    
-    return [];
+export async function getAllTranslations(userId:string):Promise<TranslationResult[]|undefined>{
+    try{
+        const response = await UserWordsCollection.findOne({userId});
+        return response?.savedWords;
+    }
+    catch (error:any){
+        console.error("Error while fetching all the words of user: ", userId, "Error: ", error.message);
+    }    
+    return [] as TranslationResult[];
 }
