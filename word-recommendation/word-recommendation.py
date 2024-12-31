@@ -3,7 +3,7 @@ from flask import Flask, jsonify, request
 
 app = Flask(__name__)
 
-@app.route('/api/words/suggestion', methods=['GET'])
+@app.route('/api/words/recommendation', methods=['GET'])
 def word_suggestion():
     lang = request.args.get('lang')
     word = request.args.get('word')
