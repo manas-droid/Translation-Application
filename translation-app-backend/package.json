@@ -14,6 +14,7 @@
   "license": "ISC",
   "description": "",
   "devDependencies": {
+    "@types/bull": "^4.10.4",
     "@types/cors": "^2.8.17",
     "@types/dotenv": "^8.2.3",
     "@types/express": "^5.0.0",
@@ -22,8 +23,10 @@
     "typescript": "^5.7.2"
   },
   "dependencies": {
+    "bull": "^4.16.5",
     "dotenv": "^16.4.7",
     "express": "^4.21.1",
+    "ioredis": "^5.4.2",
     "mongodb": "^6.12.0"
   }
 }

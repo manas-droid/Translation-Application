@@ -1,5 +1,5 @@
 import {Router} from 'express'
-import { saveTranslationController, getUserTranslationsController } from './user.words.controller.js';
+import { saveTranslationController, getUserTranslationsController } from './words.controller.js';
 
 const userWordsRouter = Router()
 
