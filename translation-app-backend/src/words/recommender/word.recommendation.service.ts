@@ -4,6 +4,7 @@ import { SuccessResponse } from "../../utils/success.response.js";
 import { ErrorResponse } from "../../utils/error.response.js";
 import Bull, { QueueOptions } from "bull";
 import { UserWordsCollection } from "../words.model.js";
+import { addRecommendationToCache, getRecommendationFromCache } from "./recommender.cache.js";
 export interface RecommendationSucessResponse{
     related_words:string[]
 }
@@ -30,7 +31,7 @@ export const saveRecommendationForWord = async (recommender:RecommenderModel):Pr
             lang:recommender.lang,
             recommendations:recommender.recommendations
         })
-
+        await addRecommendationToCache(recommender.word, recommender.recommendations);
         return {
             message:'Recommendation saved successfully',
             statusCode:200
@@ -44,9 +45,17 @@ export const saveRecommendationForWord = async (recommender:RecommenderModel):Pr
     }
 }
 
-export const getRecommendationFromDb = async (word:string):Promise<RecommenderModel|null>=>{
+export const getRecommendationFromDb = async (word:string):Promise<string[]|null|undefined>=>{
     try {
-        return await RecommenderCollection.findOne({word})
+        const cachedResponse = await getRecommendationFromCache(word);
+        
+        if(cachedResponse && cachedResponse.length > 0){
+            return cachedResponse;
+        }
+        const result = (await RecommenderCollection.findOne({word}))?.recommendations;
+        if(result)
+            addRecommendationToCache(word, result);
+        return result; 
     } catch (error:any) {
         console.error("Error while Getting Recommendation from the database", error);
         return null;
@@ -70,10 +79,11 @@ export const addRecommendations = async (recommendationRequest:RecommenderReques
 
     const response = await getRecommendationFromDb(word);
     if(response!=null){
-        await saveRecommendationForUser(recommendationRequest.userId, response.word, response.recommendations);
+        await saveRecommendationForUser(recommendationRequest.userId, word, response);
+        
     }
-    
-    wordRecommenderQueue.add({lang,word,userId})
+    else
+        wordRecommenderQueue.add({lang,word,userId})
 }
 
 export const saveRecommendationForUser = async (userId:string, word:string, recommendations:string[]):Promise<void>=>{
