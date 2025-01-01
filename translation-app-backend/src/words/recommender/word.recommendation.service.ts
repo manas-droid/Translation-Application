@@ -3,7 +3,7 @@ import { RecommenderCollection, RecommenderModel } from "./recommender.model.js"
 import { SuccessResponse } from "../../utils/success.response.js";
 import { ErrorResponse } from "../../utils/error.response.js";
 import Bull, { QueueOptions } from "bull";
-import {} from './word.process.recommendation.service.js'
+import { UserWordsCollection } from "../words.model.js";
 export interface RecommendationSucessResponse{
     related_words:string[]
 }
@@ -23,11 +23,12 @@ export const getRecommendationsFromApi = async (recommendationRequest:Recommende
     return await response.json()
 }
 
-export const saveRecommendationForWord = async (word:string, wordRecommendations:string[]):Promise<SuccessResponse|ErrorResponse>=>{
+export const saveRecommendationForWord = async (recommender:RecommenderModel):Promise<SuccessResponse|ErrorResponse>=>{
     try{
         await RecommenderCollection.insertOne({
-            word,
-            recommendations:wordRecommendations
+            word:recommender.word,
+            lang:recommender.lang,
+            recommendations:recommender.recommendations
         })
 
         return {
@@ -43,29 +44,14 @@ export const saveRecommendationForWord = async (word:string, wordRecommendations
     }
 }
 
-const getRecommendationFromDb = async (word:string):Promise<(RecommenderModel|null)|ErrorResponse>=>{
+export const getRecommendationFromDb = async (word:string):Promise<RecommenderModel|null>=>{
     try {
         return await RecommenderCollection.findOne({word})
     } catch (error:any) {
-        console.error("Error while Getting Recommendation from the database");
-        return{
-            message:'Error while Getting Recommendation from the database',
-            statusCode:500
-        }
+        console.error("Error while Getting Recommendation from the database", error);
+        return null;
     }
 
-}
-
-const checkIfRecommendationExistsInDb = async(word:string):Promise<boolean|ErrorResponse>=>{
-    try{
-        return await RecommenderCollection.countDocuments({word}) == 1;
-    }catch(error:any){
-        console.error("Error while Checking Recommendation from the database");
-        return{
-            message:'Error while Checking Recommendation from the database',
-            statusCode:500
-        }
-    }
 }
 
 const bullOptions:QueueOptions = {
@@ -79,16 +65,20 @@ const wordRecommenderQueue = new Bull<RecommenderRequest>(process.env.RECOMMENDE
 
 
 export const addRecommendations = async (recommendationRequest:RecommenderRequest)=>{
-    const {word, lang} = recommendationRequest;
+    const {word, lang, userId} = recommendationRequest;
     if(!word) return;
 
-    const response = await checkIfRecommendationExistsInDb(word);
-    if(response === true){
-        return;
+    const response = await getRecommendationFromDb(word);
+    if(response!=null){
+        await saveRecommendationForUser(recommendationRequest.userId, response.word, response.recommendations);
     }
-        
-    wordRecommenderQueue.add({lang,word})
+    
+    wordRecommenderQueue.add({lang,word,userId})
 }
 
+export const saveRecommendationForUser = async (userId:string, word:string, recommendations:string[]):Promise<void>=>{
+
+    await UserWordsCollection.updateOne({userId, "savedWords.text": word}, { $set : {"savedWords.$.recommendations": recommendations}}, {upsert:true});
+}
 
 

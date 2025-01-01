@@ -11,7 +11,7 @@ app.use(cors())
 
 app.use(process.env.API_ENDPOINT_START!, lingueeRouter);
 app.use(process.env.API_ENDPOINT_START!, userWordsRouter);
-app.use(process.env.API_ENDPOINT_START!, usersRouter)
+app.use(process.env.API_ENDPOINT_START!, usersRouter);
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {

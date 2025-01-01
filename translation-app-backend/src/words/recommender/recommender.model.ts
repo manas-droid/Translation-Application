@@ -3,6 +3,7 @@ import {db} from '../../database/db.js'
 
 export interface RecommenderModel{
     word:string,
+    lang:'de',
     recommendations:string[]
 }
 

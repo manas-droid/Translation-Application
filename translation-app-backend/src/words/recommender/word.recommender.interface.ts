@@ -1,4 +1,5 @@
 export interface RecommenderRequest{
-    lang?:string,
-    word?:string
+    lang?:'de',
+    word?:string,
+    userId:string
 }

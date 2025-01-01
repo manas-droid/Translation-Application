@@ -1,5 +1,5 @@
 import { TranslationResult } from "../utils/translation.response.js";
-import { UserWordsCollection } from "./words.model.js";
+import { SavedWords, UserWordsCollection } from "./words.model.js";
 import { ErrorResponse } from "../utils/error.response.js";
 import { SuccessResponse } from "../utils/success.response.js";
 import { addRecommendations } from "./recommender/word.recommendation.service.js";
@@ -11,12 +11,12 @@ import { addRecommendations } from "./recommender/word.recommendation.service.js
         2.a Save the recommendation on the database
 
 */
-export async function saveTranslation(translationRes: TranslationResult, userId:string): Promise<SuccessResponse|ErrorResponse>{
+export async function saveTranslation(translationRes: SavedWords, userId:string): Promise<SuccessResponse|ErrorResponse>{
     try {
         
-        await UserWordsCollection.updateOne({userId}, { $set : {userId} , $push : {savedWords : translationRes}}, {upsert:true});
+        await UserWordsCollection.updateOne({userId}, { $set : {userId} , $push : {savedWords:translationRes}}, {upsert:true});
         
-        await addRecommendations({lang:'de', word:translationRes.text})
+        await addRecommendations({lang:'de', word:translationRes.text, userId})
 
         return {
             message: "Successfully added word to your dictionary",
@@ -35,7 +35,7 @@ export async function saveTranslation(translationRes: TranslationResult, userId:
 
 }
 
-export async function getAllTranslations(userId:string):Promise<TranslationResult[]|undefined>{
+export async function getAllTranslations(userId:string):Promise<SavedWords[]|undefined>{
     try{
         const response = await UserWordsCollection.findOne({userId});
         return response?.savedWords;
@@ -43,6 +43,6 @@ export async function getAllTranslations(userId:string):Promise<TranslationResul
     catch (error:any){
         console.error("Error while fetching all the words of user: ", userId, "Error: ", error.message);
     }    
-    return [] as TranslationResult[];
+    return [] as SavedWords[];
 }
 

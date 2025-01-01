@@ -2,6 +2,7 @@ import Bull, { QueueOptions } from "bull";
 import { RecommenderRequest } from "./word.recommender.interface.js";
 import {
   getRecommendationsFromApi,
+  saveRecommendationForUser,
   saveRecommendationForWord,
 } from "./word.recommendation.service.js";
 
@@ -26,12 +27,20 @@ export default function defineRecommendationJob(){
             `Recommendation for the word ${payload.data.word}`,
             recommendations
           );
-          if (payload.data.word)
+          if (payload.data.word && payload.data.lang){
+
             await saveRecommendationForWord(
-              payload.data.word,
-              recommendations.related_words
+              {
+                lang:payload.data.lang,
+                word:payload.data.word,
+                recommendations:recommendations.related_words
+              }
             );
+          
+            await saveRecommendationForUser(payload.data.userId, payload.data.word,recommendations.related_words)
+          }
           return recommendations;
+
         } catch (error) {
           console.log("Error while submitting a job schedule");
         }
