@@ -18,16 +18,6 @@ const SavedWords: React.FC = () => {
           const response = await getUserWords(user.uid);
           console.log("User saved words",response)
           setSavedWords(response)
-
-          // setSavedWords([
-          //     {
-          //         translation:{
-          //             text:'to celebrate',
-          //             pos:'verb'
-          //         },
-          //         text:'feiern'
-          //     }
-          // ])
         }
         
     });
@@ -74,12 +64,19 @@ const SavedWords: React.FC = () => {
           )}
 
           <LingueeExamples examples={result?.translation?.examples} />
-          {
-            result.recommendations && result.recommendations.length > 0 && result.recommendations.map((recomm:string, index:number)=>(
-            <span key={index} className="font-medium me-2 px-2.5 py-0.5 rounded-full dark:bg-gray-500 text-white">{recomm}</span>
-            
-            ))
-          }
+          <div className="flex">
+            {
+              result.recommendations && result.recommendations.length > 0 &&
+              <p className="text-gray-500 italic mr-2">Recommendations:</p>
+            }
+            {
+              result.recommendations && result.recommendations.length > 0 && result.recommendations.map((recomm:string, index:number)=>(
+              <span key={index} className="font-medium me-2 px-2.5 py-0.5 rounded-full dark:bg-gray-500 text-white">{recomm}</span>
+              
+              ))
+            }
+
+          </div>
         </div>
       ))}
     </>
