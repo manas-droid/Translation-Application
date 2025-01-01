@@ -9,13 +9,14 @@ def word_suggestion():
     word = request.args.get('word')
 
     try: 
-        print(request.args)
         if lang == None or word == None or lang == '' or word == '':
             raise AttributeError("Incorrect query parameter")
 
         model = fasttext.load_model(f'cc.{lang}.300.bin')
-        related_words = model.get_nearest_neighbors(word, k=4)
+        related_words = model.get_nearest_neighbors(word, k=20)
+        related_words = sorted(related_words, key=lambda x: x[0])
         related_words = [word for _, word in related_words]
+        related_words = related_words[:4]
         return jsonify({
             "related_words" : related_words
         }), 200
