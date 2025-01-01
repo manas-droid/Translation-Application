@@ -1,7 +1,8 @@
 export interface TranslationResult{
     text?:string,
     src_audio_link?:string,
-    translation: Translation
+    translation: Translation,
+    recommendations:string[]
 }
 
 

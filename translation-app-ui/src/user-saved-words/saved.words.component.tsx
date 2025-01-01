@@ -74,6 +74,12 @@ const SavedWords: React.FC = () => {
           )}
 
           <LingueeExamples examples={result?.translation?.examples} />
+          {
+            result.recommendations && result.recommendations.length > 0 && result.recommendations.map((recomm:string, index:number)=>(
+            <span key={index} className="font-medium me-2 px-2.5 py-0.5 rounded-full dark:bg-gray-500 text-white">{recomm}</span>
+            
+            ))
+          }
         </div>
       ))}
     </>
